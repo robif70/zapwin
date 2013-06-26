@@ -71,7 +71,7 @@ def killwin(whandle):
 def _not_used_killwin():
     procids = win32process.GetWindowThreadProcessId(whandle)
     if not procids:
-        logging.error('Ni processov!')
+        logging.error('No processes!')
         return
     pid = procids[1]
     logging.info('PID: %s' % pid)
@@ -83,16 +83,16 @@ def _not_used_killwin():
 def getOpenTime(whandle):
     procids = win32process.GetWindowThreadProcessId(whandle)
     if not procids:
-        logging.error('Ni procesov')
+        logging.error('No processes')
         return None
     pid = procids[1]
     phandle = win32api.OpenProcess(win32con.PROCESS_QUERY_INFORMATION, 0, pid)
     if not phandle:
-        logging.error('Ne morem odpret procesa pid=%s' % pid)
+        logging.error('Cannot open process with pid=%s' % pid)
         return None
     times = win32process.GetProcessTimes(phandle)
     if not times:
-        logging.error('GetProcessTimes padla!')
+        raise RuntimeError('GetProcessTimes did not return anything!')
     ct =  times['CreationTime']
     return ct
         
@@ -134,18 +134,18 @@ def main():
                 opentime = int(arg)
                 if opentime < 0:
                     raise RuntimeError(
-                     'Parameter opcije -o ne sme bit negativen')
+                     'Parameter of -o option cannot be negative!')
             except Exception, e:
-                logging.error('Napaka opcija -o (%s)' % e)
+                logging.error('Error while processing -o option (%s)' % e)
                 sys.exit(1)
         if opt == '-s':
             try:
                 sleeptime = int(arg)
                 if sleeptime <= 0:
                     raise RuntimeError(
-                     'Parameter opcije -s ne sme bit manjsi od 0')
+                     'Parameter of -s option cannot be lower than 0')
             except Exception, e:
-                logging.error('Napaka opcija -s (%s)' % e)
+                logging.error('Error while processing -s option (%s)' % e)
                 sys.exit(1)
         if opt == '-h':
             usage()
